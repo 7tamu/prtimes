@@ -1,0 +1,30 @@
+name: Run PRTimes RSS Checker
+
+on:
+  schedule:
+    - cron: "0 9 * * *"  # 毎日9時に実行（日本時間）
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests feedparser gspread oauth2client
+
+      - name: Run script
+        env:
+          SHEET_ID: "1KzrFrE3EDxQLTYyXDtmG6GXtRabG4FV92HPoMcqeyAQ"
+          SHEET_NAME: "マスター"
+          SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+        run: python rss_checker.py
